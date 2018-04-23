@@ -561,7 +561,7 @@ function(input, output) {
         char2 <- as.character('Petunia')
         character2 <- input$user_char2input
       }
-      else if(input$user_char1input=='Dudley Dursley'){
+      else if(input$user_char2input=='Dudley Dursley'){
         char2 <- as.character('Dudley')
         character2 <- input$user_char2input
       }}
@@ -1051,7 +1051,7 @@ function(input, output) {
         char2 <- as.character('Petunia')
         character2 <- input$user_char2input
       }
-      else if(input$user_char1input=='Dudley Dursley'){
+      else if(input$user_char2input=='Dudley Dursley'){
         char2 <- as.character('Dudley')
         character2 <- input$user_char2input
       }}
@@ -1529,7 +1529,7 @@ function(input, output) {
         char2 <- as.character('Petunia')
         character2 <- input$user_char2input
       }
-      else if(input$user_char1input=='Dudley Dursley'){
+      else if(input$user_char2input=='Dudley Dursley'){
         char2 <- as.character('Dudley')
         character2 <- input$user_char2input
       }}
@@ -1973,7 +1973,7 @@ function(input, output) {
           char2 <- as.character('Petunia')
           character2 <- input$user_char2input
         }
-        else if(input$user_char1input=='Dudley Dursley'){
+        else if(input$user_char2input=='Dudley Dursley'){
           char2 <- as.character('Dudley')
           character2 <- input$user_char2input
         }}
