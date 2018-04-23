@@ -22,44 +22,79 @@ function(input, output) {
                    'Harry Potter and the Deathly Hallows: Part 1')
   book_kb_files <- c("storygraph_v1.csv","storygraph_v2.csv","storygraph_v3.csv","storygraph_v4.csv",
                      "storygraph_v5.csv","storygraph_v6.csv","storygraph_v7.csv")
-  book_export_files <- c("event_distribution1.csv","event_distribution2.csv","event_distribution3.csv",
-                         "event_distribution4.csv","event_distribution5.csv","event_distribution6.csv",
-                         "event_distribution7.csv")
+  book_export_files <- c("event_distribution_1.csv","event_distribution_2.csv","event_distribution_3.csv",
+                         "event_distribution_4.csv","event_distribution_5.csv","event_distribution_6.csv",
+                         "event_distribution_7.csv")
   
   df_book <- data.frame(book_choice,book_kb_files,book_export_files)
   
+  observeEvent(input$goButton0, {
+    shinyjs::toggle('plots')
+    shinyjs::show('desc1', anim=TRUE)
+    shinyjs::show('desc2', anim=TRUE)
+    shinyjs::show('desc3', anim=TRUE)
+    shinyjs::show('desc4', anim=TRUE)
+  })
+  
+  observeEvent(input$plot_click1, {
+    shinyjs::show('desc-detail1', anim=TRUE)
+  })
+  
+  observeEvent(input$plot_click2, {
+    shinyjs::show('desc-detail2', anim=TRUE)
+  })
+  
+  observeEvent(input$plot_click3, {
+    shinyjs::show('desc-detail3', anim=TRUE)
+  })
+  
+  observeEvent(input$plot_click4, {
+    shinyjs::show('desc-detail4', anim=TRUE)
+  })
   
   generate_plot1 <- eventReactive(input$goButton0,{
+    
+    ############# Progress ##############
+    # Create 0-row data frame which will be used to store data
+    dat <- data.frame(x = numeric(0), y = numeric(0))
+    # Create a Progress object
+    progress <- shiny::Progress$new()
+    # Make sure it closes when we exit this reactive, even if there's an error
+    on.exit(progress$close())
+    
+    progress$set(message = "Creating plots...", value = 0)
+    
+    n <- 5
     
     #################################
     if(input$x =='Harry Potter and the Philosopher\'s Stone'){
       kb = read.csv("storygraph_v1.csv")
-      export = as.data.frame(read.csv("event_distribution1.csv"))
+      export = as.data.frame(read.csv("event_distribution_1.csv"))
     }
     
     else if(input$x=='Harry Potter and the Chamber of Secrets'){
       kb = read.csv("storygraph_v2.csv")
-      export = as.data.frame(read.csv("event_distribution2.csv"))
+      export = as.data.frame(read.csv("event_distribution_2.csv"))
     }
     else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
       kb = read.csv("storygraph_v3.csv")
-      export = as.data.frame(read.csv("event_distribution3.csv"))
+      export = as.data.frame(read.csv("event_distribution_3.csv"))
     }
     else if(input$x=='Harry Potter and the Goblet of Fire'){
       kb = read.csv("storygraph_v4.csv")
-      export = as.data.frame(read.csv("event_distribution4.csv"))
+      export = as.data.frame(read.csv("event_distribution_4.csv"))
     }
     else if(input$x=='Harry Potter and the Order of the Phoenix'){
       kb = read.csv("storygraph_v5.csv")
-      export = as.data.frame(read.csv("event_distribution5.csv"))
+      export = as.data.frame(read.csv("event_distribution_5.csv"))
     }
     else if(input$x=='Harry Potter and the Half-Blood Prince'){
       kb = read.csv("storygraph_v6.csv")
-      export = as.data.frame(read.csv("event_distribution6.csv"))
+      export = as.data.frame(read.csv("event_distribution_6.csv"))
     }
     else{
       kb = read.csv("storygraph_v7.csv")
-      export = as.data.frame(read.csv("event_distribution7.csv"))
+      export = as.data.frame(read.csv("event_distribution_7.csv"))
     }
     
     
@@ -78,6 +113,11 @@ function(input, output) {
       data <- sub("^$", "NA", data)
       return(data)
     }
+    
+    # Increment the progress bar, and update the detail text.
+    dat <- rbind(dat, data.frame(x = rnorm(1), y = rnorm(1)))
+    progress$inc(1/n, detail = paste("Loading the story..."))
+    n <- 4
     
     kb$Subject.Characters <- preProcess(kb$Subject.Characters)
     kb$Actions.with.Subject.Charcater <- preProcess(kb$Actions.with.Subject.Charcater)
@@ -164,6 +204,11 @@ function(input, output) {
     }
     ###############################
     
+    # Increment the progress bar, and update the detail text.
+    dat <- rbind(dat, data.frame(x = rnorm(1), y = rnorm(1)))
+    progress$inc(1/n, detail = paste("Identifying events in the story..."))
+    n <- 3
+    
     ################################
     
     #Pairwise Interaction Analysis
@@ -220,6 +265,12 @@ function(input, output) {
         else
           export_pair_emotions$paragraph[event_index] <- paste(export_pair_emotions$paragraph[event_index],"NA", split = "")
       }
+      
+      # Increment the progress bar, and update the detail text.
+      dat <- rbind(dat, data.frame(x = rnorm(1), y = rnorm(1)))
+      progress$inc(1/n, detail = paste("Identifying interactions in the story..."))
+      n <- 2
+      
       #########################################################
       #Emotion Labelling per event based on the sentences per event for each character pair
       
@@ -298,6 +349,11 @@ function(input, output) {
         }}
       return(export_pair_emotions)
     }
+    
+    # Increment the progress bar, and update the detail text.
+    dat <- rbind(dat, data.frame(x = rnorm(1), y = rnorm(1)))
+    progress$inc(1/n, detail = paste("Mapping emotion of interactions..."))
+    n <- 1
     
     #Read the characters
     #char1 <- readline(prompt="Enter the first character name: ")
@@ -377,6 +433,13 @@ function(input, output) {
     #Emotions Plotting along different events for the character pairs
     #Emotions Plotting along different events for the character pairs
     
+    # Increment the progress bar, and update the detail text.
+    dat <- rbind(dat, data.frame(x = rnorm(1), y = rnorm(1)))
+    progress$inc(1/n, detail = paste("Done!"))
+    
+    
+    ######################################
+    
     library(ggplot2)
     library(reshape2)
     df_categorical <- data.frame(Scenes = 1:length(event),
@@ -399,13 +462,31 @@ function(input, output) {
     # plot on same grid, each series colored differently -- 
     #plot_c <- amStockMultiSet('Categorical_Emotions')
     #plot_c <- 
-      ggplot(df_categorical, aes(Scenes,value))+ geom_line(aes(colour = Categorical_Emotions),size=1) + scale_x_continuous(breaks=seq(1, length(event), 1))+
-      labs(title=paste("Categorical emotions trajectory for", character1, "towards",character2), x = "Progress of Story", y= "Categorical emotions in each scene")+coord_cartesian(xlim = ranges1$x, ylim = ranges1$y, expand = FALSE)+ theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
-    
+      #ggplot(df_categorical, aes(Scenes,value))+ geom_line(aes(colour = Categorical_Emotions),size=1) + scale_x_continuous(breaks=seq(1, length(event), 1))+
+      #labs(title=paste("Categorical emotions trajectory for", character1, "towards",character2), x = "Timeline", y= "Categorical emotions in each scene")+coord_cartesian(xlim = ranges1$x, ylim = ranges1$y, expand = FALSE)+ theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+      
+      ggplot(df_categorical, aes(Scenes,value)) + 
+        geom_line(aes(colour = Categorical_Emotions), size=1) + 
+        scale_x_continuous(breaks=seq(1, length(event), 1)) + 
+        labs(title = paste(character1, bquote("\U002192"), character2), 
+             colour = "Category",
+             x = "Timeline", 
+             y= "Intensity") +
+        coord_cartesian(xlim = ranges1$x, ylim = ranges1$y, expand = FALSE) + 
+        theme(plot.title = element_text(family="Open Sans", color="#008cba", size=20, hjust=0)) +
+        theme(axis.title = element_text(family="Open Sans", color="#5bc0de", size=14)) +
+        theme(legend.text = element_text(family="Open Sans", size=14)) +
+        theme(legend.title = element_text(family="Open Sans", size=14)) +
+        theme(axis.text.x = element_blank(), 
+              axis.ticks.x = element_blank())
+      
     #require(gridExtra)
     #grid.arrange(plot_c,nrow=1)
     #height=700
-      })
+      
+    
+    
+  })
   
   
   output$`Emotion Mapping1` <- renderPlot({ 
@@ -415,35 +496,47 @@ function(input, output) {
  ##################################################################################################################################
   generate_plot2 <- eventReactive(input$goButton0,{
     
+    ############# Progress ##############
+    # Create 0-row data frame which will be used to store data
+    dat <- data.frame(x = numeric(0), y = numeric(0))
+    # Create a Progress object
+    progress <- shiny::Progress$new()
+    # Make sure it closes when we exit this reactive, even if there's an error
+    on.exit(progress$close())
+    
+    progress$set(message = "Creating plots...", value = 0)
+    
+    n <- 5
+    
     #################################
     if(input$x =='Harry Potter and the Philosopher\'s Stone'){
       kb = read.csv("storygraph_v1.csv")
-      export = as.data.frame(read.csv("event_distribution1.csv"))
+      export = as.data.frame(read.csv("event_distribution_1.csv"))
     }
     
     else if(input$x=='Harry Potter and the Chamber of Secrets'){
       kb = read.csv("storygraph_v2.csv")
-      export = as.data.frame(read.csv("event_distribution2.csv"))
+      export = as.data.frame(read.csv("event_distribution_2.csv"))
     }
     else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
       kb = read.csv("storygraph_v3.csv")
-      export = as.data.frame(read.csv("event_distribution3.csv"))
+      export = as.data.frame(read.csv("event_distribution_3.csv"))
     }
     else if(input$x=='Harry Potter and the Goblet of Fire'){
       kb = read.csv("storygraph_v4.csv")
-      export = as.data.frame(read.csv("event_distribution4.csv"))
+      export = as.data.frame(read.csv("event_distribution_4.csv"))
     }
     else if(input$x=='Harry Potter and the Order of the Phoenix'){
       kb = read.csv("storygraph_v5.csv")
-      export = as.data.frame(read.csv("event_distribution5.csv"))
+      export = as.data.frame(read.csv("event_distribution_5.csv"))
     }
     else if(input$x=='Harry Potter and the Half-Blood Prince'){
       kb = read.csv("storygraph_v6.csv")
-      export = as.data.frame(read.csv("event_distribution6.csv"))
+      export = as.data.frame(read.csv("event_distribution_6.csv"))
     }
     else{
       kb = read.csv("storygraph_v7.csv")
-      export = as.data.frame(read.csv("event_distribution7.csv"))
+      export = as.data.frame(read.csv("event_distribution_7.csv"))
     }
     
     
@@ -462,6 +555,11 @@ function(input, output) {
       data <- sub("^$", "NA", data)
       return(data)
     }
+    
+    # Increment the progress bar, and update the detail text.
+    dat <- rbind(dat, data.frame(x = rnorm(1), y = rnorm(1)))
+    progress$inc(1/n, detail = paste("Loading the story..."))
+    n <- 4
     
     kb$Subject.Characters <- preProcess(kb$Subject.Characters)
     kb$Actions.with.Subject.Charcater <- preProcess(kb$Actions.with.Subject.Charcater)
@@ -548,6 +646,11 @@ function(input, output) {
     }
     ###############################
     
+    # Increment the progress bar, and update the detail text.
+    dat <- rbind(dat, data.frame(x = rnorm(1), y = rnorm(1)))
+    progress$inc(1/n, detail = paste("Identifying events in the story..."))
+    n <- 3
+    
     ################################
     
     #Pairwise Interaction Analysis
@@ -604,6 +707,12 @@ function(input, output) {
         else
           export_pair_emotions$paragraph[event_index] <- paste(export_pair_emotions$paragraph[event_index],"NA", split = "")
       }
+      
+      # Increment the progress bar, and update the detail text.
+      dat <- rbind(dat, data.frame(x = rnorm(1), y = rnorm(1)))
+      progress$inc(1/n, detail = paste("Identifying interactions in the story..."))
+      n <- 2
+      
       #########################################################
       #Emotion Labelling per event based on the sentences per event for each character pair
       
@@ -683,6 +792,11 @@ function(input, output) {
       return(export_pair_emotions)
     }
     
+    # Increment the progress bar, and update the detail text.
+    dat <- rbind(dat, data.frame(x = rnorm(1), y = rnorm(1)))
+    progress$inc(1/n, detail = paste("Mapping emotion of interactions..."))
+    n <- 1
+    
     #Read the characters
     #char1 <- readline(prompt="Enter the first character name: ")
     #char2 <-  readline(prompt="Enter the second character name: ")
@@ -761,6 +875,10 @@ function(input, output) {
     #Emotions Plotting along different events for the character pairs
     #Emotions Plotting along different events for the character pairs
     
+    # Increment the progress bar, and update the detail text.
+    dat <- rbind(dat, data.frame(x = rnorm(1), y = rnorm(1)))
+    progress$inc(1/n, detail = paste("Done!"))
+    
     library(ggplot2)
     library(reshape2)
     df_categorical <- data.frame(Scenes = 1:length(event),
@@ -783,8 +901,21 @@ function(input, output) {
     # plot on same grid, each series colored differently -- 
     #plot_c <- amStockMultiSet('Categorical_Emotions')
      #plot_d <- 
-    ggplot(df_dimensional, aes(Scenes,value))+ geom_line(aes(colour = Dimensional_Emotions),size=1) + scale_x_continuous(breaks=seq(1, length(event), 1))+
-      labs(title=paste("Dimensional emotions trajectory for", character1, "towards", character2),x = "Progress of Story", y = "Dimensional emotions in each scene")+coord_cartesian(xlim = ranges2$x, ylim = ranges2$y, expand = FALSE)+ theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) 
+    ggplot(df_dimensional, aes(Scenes,value)) + 
+      geom_line(aes(colour = Dimensional_Emotions), size=1) + 
+      scale_x_continuous(breaks=seq(1, length(event), 1)) + 
+      labs(title = paste(character1, bquote("\U002192"), character2), 
+           colour = "Dimension",
+           x = "Timeline", 
+           y= "Intensity") +
+      coord_cartesian(xlim = ranges2$x, ylim = ranges2$y, expand = FALSE) + 
+      theme(plot.title = element_text(family="Open Sans", color="#008cba", size=20, hjust=0)) +
+      theme(axis.title = element_text(family="Open Sans", color="#5bc0de", size=14)) +
+      theme(legend.text = element_text(family="Open Sans", size=14)) +
+      theme(legend.title = element_text(family="Open Sans", size=14)) +
+      theme(axis.text.x = element_blank(), 
+            axis.ticks.x = element_blank())
+    
     
     #require(gridExtra)
     #grid.arrange(plot_d, nrow=1)
@@ -837,32 +968,32 @@ function(input, output) {
     #################################
     if(input$x=='Harry Potter and the Philosopher\'s Stone'){
       kb = read.csv("storygraph_v1.csv")
-      export = as.data.frame(read.csv("event_distribution1.csv"))
+      export = as.data.frame(read.csv("event_distribution_1.csv"))
     }
     
     else if(input$x=='Harry Potter and the Chamber of Secrets'){
       kb = read.csv("storygraph_v2.csv")
-      export = as.data.frame(read.csv("event_distribution2.csv"))
+      export = as.data.frame(read.csv("event_distribution_2.csv"))
     }
     else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
       kb = read.csv("storygraph_v3.csv")
-      export = as.data.frame(read.csv("event_distribution3.csv"))
+      export = as.data.frame(read.csv("event_distribution_3.csv"))
     }
     else if(input$x=='Harry Potter and the Goblet of Fire'){
       kb = read.csv("storygraph_v4.csv")
-      export = as.data.frame(read.csv("event_distribution4.csv"))
+      export = as.data.frame(read.csv("event_distribution_4.csv"))
     }
     else if(input$x=='Harry Potter and the Order of the Phoenix'){
       kb = read.csv("storygraph_v5.csv")
-      export = as.data.frame(read.csv("event_distribution5.csv"))
+      export = as.data.frame(read.csv("event_distribution_5.csv"))
     }
     else if(input$x=='Harry Potter and the Half-Blood Prince'){
       kb = read.csv("storygraph_v6.csv")
-      export = as.data.frame(read.csv("event_distribution6.csv"))
+      export = as.data.frame(read.csv("event_distribution_6.csv"))
     }
     else{
       kb = read.csv("storygraph_v7.csv")
-      export = as.data.frame(read.csv("event_distribution7.csv"))
+      export = as.data.frame(read.csv("event_distribution_7.csv"))
     }
     
     
@@ -1194,8 +1325,23 @@ function(input, output) {
     # plot on same grid, each series colored differently -- 
     
     #plot_c <- 
-    ggplot(df_categorical, aes(Scenes,value))+ geom_line(aes(colour = Categorical_Emotions),size=1) + scale_x_continuous(breaks=seq(1, length(event), 1))+
-      labs(title=paste("Categorical emotions trajectory for", character2, "towards",character1), x = "Progress of Story", y= "Categorical emotions in each scene")+coord_cartesian(xlim = ranges3$x, ylim = ranges3$y, expand = FALSE)+ theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+    #ggplot(df_categorical, aes(Scenes,value))+ geom_line(aes(colour = Categorical_Emotions),size=1) + scale_x_continuous(breaks=seq(1, length(event), 1))+
+    #  labs(title=paste("Categorical emotions trajectory for", character2, "towards",character1), x = "Timeline", y= "Categorical emotions in each scene")+coord_cartesian(xlim = ranges3$x, ylim = ranges3$y, expand = FALSE)+ theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+    
+    ggplot(df_categorical, aes(Scenes,value)) + 
+      geom_line(aes(colour = Categorical_Emotions), size=1) + 
+      scale_x_continuous(breaks=seq(1, length(event), 1)) + 
+      labs(title = paste(character2, bquote("\U002192"), character1), 
+           colour = "Category",
+           x = "Timeline", 
+           y= "Intensity") +
+      coord_cartesian(xlim = ranges3$x, ylim = ranges3$y, expand = FALSE) + 
+      theme(plot.title = element_text(family="Open Sans", color="#008cba", size=20, hjust=0)) +
+      theme(axis.title = element_text(family="Open Sans", color="#5bc0de", size=14)) +
+      theme(legend.text = element_text(family="Open Sans", size=14)) +
+      theme(legend.title = element_text(family="Open Sans", size=14)) +
+      theme(axis.text.x = element_blank(), 
+            axis.ticks.x = element_blank())
     
   #require(gridExtra)
    #grid.arrange(plot_c, nrow=1)
@@ -1212,32 +1358,32 @@ function(input, output) {
       #################################
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -1575,8 +1721,20 @@ function(input, output) {
       # plot on same grid, each series colored differently -- 
       
       #plot_d <- 
-      ggplot(df_dimensional, aes(Scenes,value))+ geom_line(aes(colour = Dimensional_Emotions),size=1) + scale_x_continuous(breaks=seq(1, length(event), 1))+
-        labs(title=paste("Dimensional emotions trajectory for", character2, "towards", character1),x = "Progress of Story", y = "Dimensional emotions in each scene")+coord_cartesian(xlim = ranges4$x, ylim = ranges4$y, expand = FALSE) + theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+      ggplot(df_dimensional, aes(Scenes,value)) + 
+        geom_line(aes(colour = Dimensional_Emotions), size=1) + 
+        scale_x_continuous(breaks=seq(1, length(event), 1)) + 
+        labs(title = paste(character2, bquote("\U002192"), character1), 
+             colour = "Dimension",
+             x = "Timeline", 
+             y= "Intensity") +
+        coord_cartesian(xlim = ranges4$x, ylim = ranges4$y, expand = FALSE) + 
+        theme(plot.title = element_text(family="Open Sans", color="#008cba", size=20, hjust=0)) +
+        theme(axis.title = element_text(family="Open Sans", color="#5bc0de", size=14)) +
+        theme(legend.text = element_text(family="Open Sans", size=14)) +
+        theme(legend.title = element_text(family="Open Sans", size=14)) +
+        theme(axis.text.x = element_blank(), 
+              axis.ticks.x = element_blank())
       
       #require(gridExtra)
       #grid.arrange(plot_d, nrow=1)
@@ -1638,32 +1796,32 @@ function(input, output) {
     text_emotion <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -1690,32 +1848,32 @@ function(input, output) {
     text_d <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -1725,32 +1883,32 @@ function(input, output) {
     text_sub <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -1862,32 +2020,32 @@ function(input, output) {
     text_obj <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -1999,32 +2157,32 @@ function(input, output) {
     bar_plot <- eventReactive( input$plot_click1,{
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -2135,32 +2293,32 @@ function(input, output) {
     d_barplot <- eventReactive(input$plot_click1, {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        dist = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        dist = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        dist = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        dist = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        dist = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        dist = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        dist = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -2262,44 +2420,46 @@ function(input, output) {
               ylab="Emotion Score",
               xlab="Categorical Emotions")
     
-      #  floor(as.numeric(input$plot_click1$x))
-    
-     # amRadar(data.frame(label = c("A", "Z", "E", "R", "T", "AW", "ZW", "EW"),
-      #                          Product1 = export[ floor(as.numeric(input$plot_click1$x)),5:12]),legend=TRUE,ylim=c(0,1))
+      mm1 <- as.matrix(sapply(dist, as.numeric))
+      mm2 <- matrix(mm1, ncol = ncol(dist), dimnames = NULL)
+      
+      amRadar(data.frame(label = c("joy","anticipation","surprise","trust","anger","sadness","disgust","fear"),
+                         Product1 = mm2[floor(as.numeric(input$plot_click1$x)),5:12])
+              ,xlim=c(0,0.5))
     })
-    output$`Dimensional Mapping` <- renderPlot({ 
+    output$`Dimensional Mapping` <- renderAmCharts({ 
       d_barplot()
     }) 
     #########################################################################################
     text_emotion2 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -2326,32 +2486,32 @@ function(input, output) {
     text_d2 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -2361,32 +2521,32 @@ function(input, output) {
     text_sub2 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -2498,32 +2658,32 @@ function(input, output) {
     text_obj2 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -2635,32 +2795,32 @@ function(input, output) {
     bar_plot2 <- eventReactive( input$plot_click2,{
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -2771,32 +2931,32 @@ function(input, output) {
     d_barplot2 <- eventReactive(input$plot_click2, {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        dist = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        dist = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        dist = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        dist = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        dist = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        dist = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        dist = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -2899,7 +3059,12 @@ function(input, output) {
               xlab="Dimensional Emotions")
       
       #  floor(as.numeric(input$plot_click1$x))
+      mm1 <- as.matrix(sapply(dist, as.numeric))
+      mm2 <- matrix(mm1, ncol = ncol(dist), dimnames = NULL)
       
+      amRadar(data.frame(label = c("valence","arousal","dominance"),
+                         Product1 = mm2[floor(as.numeric(input$plot_click2$x)),13:15])
+              ,xlim=c(-1.5,1.5))
       # amRadar(data.frame(label = c("A", "Z", "E", "R", "T", "AW", "ZW", "EW"),
       #                          Product1 = export[ floor(as.numeric(input$plot_click1$x)),5:12]),legend=TRUE,ylim=c(0,1))
     })
@@ -2911,32 +3076,32 @@ function(input, output) {
     text_emotion2 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -2963,32 +3128,32 @@ function(input, output) {
     text_d2 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -2998,32 +3163,32 @@ function(input, output) {
     text_sub2 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -3135,32 +3300,32 @@ function(input, output) {
     text_obj2 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -3272,32 +3437,32 @@ function(input, output) {
     bar_plot2 <- eventReactive( input$plot_click2,{
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -3404,37 +3569,63 @@ function(input, output) {
     output$`Plot Generated2` <- renderPlot({ 
       bar_plot2()
     }) 
-    
+    observeEvent(input$goButton001, {
+      showModal(modalDialog(
+        title = "Emofiel",
+        HTML( 
+      paste("We present EMOFIEL, a system that identifies characters and scenes
+        in a story from a fictional narrative summary, generates appropri-
+          ate scene descriptions, identifies the emotion flow between a given
+        directed pair of story characters in each interaction, and organizes
+        them along the story timeline to populate a knowledge base about
+        stories. These emotions are identified using two emotion modelling
+        approaches: categorical and dimensional emotion models. The gen-
+          erated plots show that in a particular scene, two characters can
+        share multiple emotions together with different intensity. Further-
+          more, the directionality of the emotion can be captured as well,
+        depending on which character is more dominant in each interaction.
+        EMOFIEL provides a web-based GUI that allows users to query the
+        constructed knowledge base to explore the emotion mapping of
+        a given character pair throughout a given story, and to explore
+        scenes for which a certain emotion peaks.","
+        
+        Publication:
+          
+        Harshita Jhavar and Paramita Mirza. 2018. EMOFIEL: Mapping Emotions of
+        Relationships in a Story. In WWW ’18 Companion: The 2018 Web Conference
+        Companion, April 23–27, 2018, Lyon, France. ACM", sep = "<br/>")
+      )
+      ))})
     
     d_barplot2 <- eventReactive(input$plot_click2, {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        dist = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        dist = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        dist = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        dist = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        dist = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        dist = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        dist = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -3531,50 +3722,52 @@ function(input, output) {
           }
         } 
       }
-      barplot(as.matrix(export[floor(as.numeric(input$plot_click2$x)),13:15]), 
-              main=paste("Dimensional Emotion Mapping of Scene",floor(as.numeric(input$plot_click2$x))),
-              ylab="Emotion Score",
-              xlab="Dimensional Emotions")
+      #barplot(as.matrix(export[floor(as.numeric(input$plot_click2$x)),13:15]), 
+      #        main=paste("Dimensional Emotion Mapping of Scene",floor(as.numeric(input$plot_click2$x))),
+      #        ylab="Emotion Score",
+      #        xlab="Dimensional Emotions")
       
-      #  floor(as.numeric(input$plot_click1$x))
+      mm1 <- as.matrix(sapply(dist, as.numeric))
+      mm2 <- matrix(mm1, ncol = ncol(dist), dimnames = NULL)
       
-      # amRadar(data.frame(label = c("A", "Z", "E", "R", "T", "AW", "ZW", "EW"),
-      #                          Product1 = export[ floor(as.numeric(input$plot_click1$x)),5:12]),legend=TRUE,ylim=c(0,1))
+      amRadar(data.frame(label = c("valence","arousal","dominance"),
+                         Product1 = mm2[floor(as.numeric(input$plot_click2$x)),13:15])
+              ,xlim=c(-1.5,1.5))
+      
     })
-    output$`Dimensional Mapping2` <- renderPlot({ 
-      bar_plot2()
-      
-    }) 
+    output$`Dimensional Mapping2` <- renderAmCharts({ 
+      d_barplot2()
+    })
     ##################################################################################################
     text_emotion4 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -3601,32 +3794,32 @@ function(input, output) {
     text_d4 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -3637,32 +3830,32 @@ function(input, output) {
     text_sub4 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -3774,32 +3967,32 @@ function(input, output) {
     text_obj4 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -3908,310 +4101,182 @@ function(input, output) {
     })
     
     
-    bar_plot4 <- eventReactive( input$plot_click4,{
-      if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
-      }
-      
-      else if(input$x=='Harry Potter and the Chamber of Secrets'){
-        kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
-      }
-      else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
-        kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
-      }
-      else if(input$x=='Harry Potter and the Goblet of Fire'){
-        kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
-      }
-      else if(input$x=='Harry Potter and the Order of the Phoenix'){
-        kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
-      }
-      else if(input$x=='Harry Potter and the Half-Blood Prince'){
-        kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
-      }
-      else{
-        kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
-      }
-      
-      
-      
-      # kb <- renderText({ 
-      #  read.csv(kb_data())
-      #})
-      #Preprocessing
-      #Cleaning Actions and Objects column
-      preProcess <- function(data){
-        data <-  gsub('\\[', '', data)
-        data <-  gsub('\\]', '', data)
-        data <-  gsub("\\'", '', data)
-        data <-  gsub("\\,", '', data)
-        data <-  gsub("\\- |\\-| ", ' ', data)
-        data <- sub("^$", "NA", data)
-        return(data)
-      }
-      
-      kb$Subject.Characters <- preProcess(kb$Subject.Characters)
-      kb$Actions.with.Subject.Charcater <- preProcess(kb$Actions.with.Subject.Charcater)
-      kb$Object.Characters <- preProcess(kb$Object.Characters)
-      kb$Objects.and.Actions <- preProcess(kb$Objects.and.Actions)
-      
-      #Removing those rows in which subject and object both are NA
-      kb <- subset(kb, !(grepl("NA",kb[[2]]) & grepl("NA",kb[[4]])))
-      
-      #Defining Event
-      event = list()
-      event_sentences = list()
-      j=0 #Event Index
-      for(i in 1:length(kb$Sentence)){
-        #print(i)
-        if(length(event) == 0){
-          currentObject <- strsplit(
-            (kb$Object.Characters[1])," ")
-          # currentObject<- currentObject[[1:length(strsplit((kb$Object.Characters[k])," ")[1])]]
-          
-          currentSubject <-   strsplit(
-            (kb$Subject.Characters[1])," ")
-          event[1] <- 1
-          print("Event Initialised")
-          j=1 #j is the event id
-          previous_event_characters <- c(currentSubject,currentObject)
-          
+    
+    
+    d_barplot4 <- 
+      eventReactive(input$plot_click4, {
+        if(input$x=='Harry Potter and the Philosopher\'s Stone'){
+          kb = read.csv("storygraph_v1.csv")
+          dist = as.data.frame(read.csv("event_distribution_1.csv"))
+        }
+        
+        else if(input$x=='Harry Potter and the Chamber of Secrets'){
+          kb = read.csv("storygraph_v2.csv")
+          dist = as.data.frame(read.csv("event_distribution_2.csv"))
+        }
+        else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
+          kb = read.csv("storygraph_v3.csv")
+          dist = as.data.frame(read.csv("event_distribution_3.csv"))
+        }
+        else if(input$x=='Harry Potter and the Goblet of Fire'){
+          kb = read.csv("storygraph_v4.csv")
+          dist = as.data.frame(read.csv("event_distribution_4.csv"))
+        }
+        else if(input$x=='Harry Potter and the Order of the Phoenix'){
+          kb = read.csv("storygraph_v5.csv")
+          dist = as.data.frame(read.csv("event_distribution_5.csv"))
+        }
+        else if(input$x=='Harry Potter and the Half-Blood Prince'){
+          kb = read.csv("storygraph_v6.csv")
+          dist = as.data.frame(read.csv("event_distribution_6.csv"))
         }
         else{
-          
-          #Search in previous event
-          length_Last_Event = length(event[[j]])
-          #Storing the sentence id from the last event
-          temp <- event[[j]]
-          #print(c("temp =", temp))
-          
-          
-          # for(k in 1:length_Last_Event){
-          pronounList <- c("he","He","She","she","it","It","They","they","We","we","I","You","you","him","Him","Her","her","Them","them","Us","us","Me","me")
-          #New Algo for Scene Segmentation
-          currentObject <- unique(strsplit(kb$Object.Characters[i]," ")[[1:length(strsplit(kb$Object.Characters[i]," ")[1])]])
-          # currentObject<- currentObject[[1:length(strsplit((kb$Object.Characters[k])," ")[1])]]
-          
-          currentSubject <-   unique(strsplit(kb$Subject.Characters[i]," ")[[1:length(strsplit(kb$Subject.Characters[i]," ")[1])]])
-          #currentSubject<- currentSubject[[1:length(strsplit((kb$Subject.Characters[k])," ")[1])]]
-          
-          #  if((length(Reduce(intersect,list(currentObject,previous_event_characters)))==0) & (length(currentObject)>0)){
-          if(((length(intersect(strsplit(unlist(currentObject)," "),strsplit(unlist(previous_event_characters)," ")))==0) &
-              (length(intersect(strsplit(unlist(currentSubject)," "),strsplit(unlist(previous_event_characters)," ")))==0))){
-            #A new event defined
-            j = j+1 #Increasing the event id
-            event[[j]] <- i
-            #print("LALA")
-            print("New eventCC")
+          kb = read.csv("storygraph_v7.csv")
+          dist = as.data.frame(read.csv("event_distribution_7.csv"))
+        }
+        
+        
+        
+        # kb <- renderText({ 
+        #  read.csv(kb_data())
+        #})
+        #Preprocessing
+        #Cleaning Actions and Objects column
+        preProcess <- function(data){
+          data <-  gsub('\\[', '', data)
+          data <-  gsub('\\]', '', data)
+          data <-  gsub("\\'", '', data)
+          data <-  gsub("\\,", '', data)
+          data <-  gsub("\\- |\\-| ", ' ', data)
+          data <- sub("^$", "NA", data)
+          return(data)
+        }
+        
+        kb$Subject.Characters <- preProcess(kb$Subject.Characters)
+        kb$Actions.with.Subject.Charcater <- preProcess(kb$Actions.with.Subject.Charcater)
+        kb$Object.Characters <- preProcess(kb$Object.Characters)
+        kb$Objects.and.Actions <- preProcess(kb$Objects.and.Actions)
+        
+        #Removing those rows in which subject and object both are NA
+        kb <- subset(kb, !(grepl("NA",kb[[2]]) & grepl("NA",kb[[4]])))
+        
+        #Defining Event
+        event = list()
+        event_sentences = list()
+        j=0 #Event Index
+        for(i in 1:length(kb$Sentence)){
+          #print(i)
+          if(length(event) == 0){
+            currentObject <- strsplit(
+              (kb$Object.Characters[1])," ")
+            # currentObject<- currentObject[[1:length(strsplit((kb$Object.Characters[k])," ")[1])]]
+            
+            currentSubject <-   strsplit(
+              (kb$Subject.Characters[1])," ")
+            event[1] <- 1
+            print("Event Initialised")
+            j=1 #j is the event id
             previous_event_characters <- c(currentSubject,currentObject)
+            
           }
           else{
-            if(length(intersect(strsplit(unlist(currentObject)," "),strsplit(unlist(previous_event_characters)," ")))==0){
-              if(length(setdiff(currentObject,pronounList))==0){
+            
+            #Search in previous event
+            length_Last_Event = length(event[[j]])
+            #Storing the sentence id from the last event
+            temp <- event[[j]]
+            #print(c("temp =", temp))
+            
+            
+            # for(k in 1:length_Last_Event){
+            pronounList <- c("he","He","She","she","it","It","They","they","We","we","I","You","you","him","Him","Her","her","Them","them","Us","us","Me","me")
+            #New Algo for Scene Segmentation
+            currentObject <- unique(strsplit(kb$Object.Characters[i]," ")[[1:length(strsplit(kb$Object.Characters[i]," ")[1])]])
+            # currentObject<- currentObject[[1:length(strsplit((kb$Object.Characters[k])," ")[1])]]
+            
+            currentSubject <-   unique(strsplit(kb$Subject.Characters[i]," ")[[1:length(strsplit(kb$Subject.Characters[i]," ")[1])]])
+            #currentSubject<- currentSubject[[1:length(strsplit((kb$Subject.Characters[k])," ")[1])]]
+            
+            #  if((length(Reduce(intersect,list(currentObject,previous_event_characters)))==0) & (length(currentObject)>0)){
+            if(((length(intersect(strsplit(unlist(currentObject)," "),strsplit(unlist(previous_event_characters)," ")))==0) &
+                (length(intersect(strsplit(unlist(currentSubject)," "),strsplit(unlist(previous_event_characters)," ")))==0))){
+              #A new event defined
+              j = j+1 #Increasing the event id
+              event[[j]] <- i
+              #print("LALA")
+              print("New eventCC")
+              previous_event_characters <- c(currentSubject,currentObject)
+            }
+            else{
+              if(length(intersect(strsplit(unlist(currentObject)," "),strsplit(unlist(previous_event_characters)," ")))==0){
+                if(length(setdiff(currentObject,pronounList))==0){
+                  event[[j]] <- c(event[[j]],i)
+                  print("Same Event")
+                  previous_event_characters <- c(previous_event_characters,currentSubject,currentObject)
+                }
+                else{
+                  j = j+1 #Increasing the event id
+                  event[[j]] <- i
+                  #print("LALA")
+                  print("New eventCC")
+                  previous_event_characters <- c(currentSubject,currentObject)}
+              }
+              else{
                 event[[j]] <- c(event[[j]],i)
                 print("Same Event")
                 previous_event_characters <- c(previous_event_characters,currentSubject,currentObject)
               }
-              else{
-                j = j+1 #Increasing the event id
-                event[[j]] <- i
-                #print("LALA")
-                print("New eventCC")
-                previous_event_characters <- c(currentSubject,currentObject)}
             }
-            else{
-              event[[j]] <- c(event[[j]],i)
-              print("Same Event")
-              previous_event_characters <- c(previous_event_characters,currentSubject,currentObject)
-            }
-          }
-        } 
-      }
-      barplot(as.matrix(export[floor(as.numeric(input$plot_click4$x)),13:15]), 
-              main=paste("Dimensional Emotion Mapping of Scene",floor(as.numeric(input$plot_click4$x))),
-              ylab="Emotion Score",
-              xlab="Dimensional Emotions")
-      
-    })
-    output$`Plot Generated4` <- renderPlot({ 
-      bar_plot4()
-    }) 
-    
-    
-    d_barplot4 <- eventReactive(input$plot_click4, {
-      if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
-      }
-      
-      else if(input$x=='Harry Potter and the Chamber of Secrets'){
-        kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
-      }
-      else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
-        kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
-      }
-      else if(input$x=='Harry Potter and the Goblet of Fire'){
-        kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
-      }
-      else if(input$x=='Harry Potter and the Order of the Phoenix'){
-        kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
-      }
-      else if(input$x=='Harry Potter and the Half-Blood Prince'){
-        kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
-      }
-      else{
-        kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
-      }
-      
-      
-      
-      # kb <- renderText({ 
-      #  read.csv(kb_data())
-      #})
-      #Preprocessing
-      #Cleaning Actions and Objects column
-      preProcess <- function(data){
-        data <-  gsub('\\[', '', data)
-        data <-  gsub('\\]', '', data)
-        data <-  gsub("\\'", '', data)
-        data <-  gsub("\\,", '', data)
-        data <-  gsub("\\- |\\-| ", ' ', data)
-        data <- sub("^$", "NA", data)
-        return(data)
-      }
-      
-      kb$Subject.Characters <- preProcess(kb$Subject.Characters)
-      kb$Actions.with.Subject.Charcater <- preProcess(kb$Actions.with.Subject.Charcater)
-      kb$Object.Characters <- preProcess(kb$Object.Characters)
-      kb$Objects.and.Actions <- preProcess(kb$Objects.and.Actions)
-      
-      #Removing those rows in which subject and object both are NA
-      kb <- subset(kb, !(grepl("NA",kb[[2]]) & grepl("NA",kb[[4]])))
-      
-      #Defining Event
-      event = list()
-      event_sentences = list()
-      j=0 #Event Index
-      for(i in 1:length(kb$Sentence)){
-        #print(i)
-        if(length(event) == 0){
-          currentObject <- strsplit(
-            (kb$Object.Characters[1])," ")
-          # currentObject<- currentObject[[1:length(strsplit((kb$Object.Characters[k])," ")[1])]]
-          
-          currentSubject <-   strsplit(
-            (kb$Subject.Characters[1])," ")
-          event[1] <- 1
-          print("Event Initialised")
-          j=1 #j is the event id
-          previous_event_characters <- c(currentSubject,currentObject)
-          
+          } 
         }
-        else{
-          
-          #Search in previous event
-          length_Last_Event = length(event[[j]])
-          #Storing the sentence id from the last event
-          temp <- event[[j]]
-          #print(c("temp =", temp))
-          
-          
-          # for(k in 1:length_Last_Event){
-          pronounList <- c("he","He","She","she","it","It","They","they","We","we","I","You","you","him","Him","Her","her","Them","them","Us","us","Me","me")
-          #New Algo for Scene Segmentation
-          currentObject <- unique(strsplit(kb$Object.Characters[i]," ")[[1:length(strsplit(kb$Object.Characters[i]," ")[1])]])
-          # currentObject<- currentObject[[1:length(strsplit((kb$Object.Characters[k])," ")[1])]]
-          
-          currentSubject <-   unique(strsplit(kb$Subject.Characters[i]," ")[[1:length(strsplit(kb$Subject.Characters[i]," ")[1])]])
-          #currentSubject<- currentSubject[[1:length(strsplit((kb$Subject.Characters[k])," ")[1])]]
-          
-          #  if((length(Reduce(intersect,list(currentObject,previous_event_characters)))==0) & (length(currentObject)>0)){
-          if(((length(intersect(strsplit(unlist(currentObject)," "),strsplit(unlist(previous_event_characters)," ")))==0) &
-              (length(intersect(strsplit(unlist(currentSubject)," "),strsplit(unlist(previous_event_characters)," ")))==0))){
-            #A new event defined
-            j = j+1 #Increasing the event id
-            event[[j]] <- i
-            #print("LALA")
-            print("New eventCC")
-            previous_event_characters <- c(currentSubject,currentObject)
-          }
-          else{
-            if(length(intersect(strsplit(unlist(currentObject)," "),strsplit(unlist(previous_event_characters)," ")))==0){
-              if(length(setdiff(currentObject,pronounList))==0){
-                event[[j]] <- c(event[[j]],i)
-                print("Same Event")
-                previous_event_characters <- c(previous_event_characters,currentSubject,currentObject)
-              }
-              else{
-                j = j+1 #Increasing the event id
-                event[[j]] <- i
-                #print("LALA")
-                print("New eventCC")
-                previous_event_characters <- c(currentSubject,currentObject)}
-            }
-            else{
-              event[[j]] <- c(event[[j]],i)
-              print("Same Event")
-              previous_event_characters <- c(previous_event_characters,currentSubject,currentObject)
-            }
-          }
-        } 
-      }
-      barplot(as.matrix(export[floor(as.numeric(input$plot_click4$x)),13:15]), 
-              main=paste("Dimensional Emotion Mapping of Scene",floor(as.numeric(input$plot_click4$x))),
-              ylab="Emotion Score",
-              xlab="Dimensional Emotions")
-      
-      #  floor(as.numeric(input$plot_click1$x))
-      
-      # amRadar(data.frame(label = c("A", "Z", "E", "R", "T", "AW", "ZW", "EW"),
-      #                          Product1 = export[ floor(as.numeric(input$plot_click1$x)),5:12]),legend=TRUE,ylim=c(0,1))
-    })
+        #barplot(as.matrix(export[floor(as.numeric(input$plot_click3$x)),5:12]), 
+        #        main=paste("Categorical Emotion Mapping of Scene",floor(as.numeric(input$plot_click3$x))),
+        #        ylab="Emotion Score",
+        #        xlab="Categorical Emotions")
+        
+        #  floor(as.numeric(input$plot_click1$x))
+        
+        mm1 <- as.matrix(sapply(dist, as.numeric))
+        mm2 <- matrix(mm1, ncol = ncol(dist), dimnames = NULL)
+        
+        amRadar(data.frame(label = c("valence","arousal","dominance"),
+                           Product1 = mm2[floor(as.numeric(input$plot_click4$x)),13:15])
+                ,xlim=c(0,0.5))
+        
+      })
     output$`Dimensional Mapping4` <- renderPlot({ 
-      bar_plot4()
+      d_barplot4()
     }) 
     ######################################################################################
     text_emotion3 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -4238,32 +4303,32 @@ function(input, output) {
     text_d3 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -4274,32 +4339,32 @@ function(input, output) {
     text_sub3 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -4411,32 +4476,32 @@ function(input, output) {
     text_obj3 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -4544,171 +4609,36 @@ function(input, output) {
       c("Patients+associated Actions:",scene_kb$Objects.and.Actions)
     })
     
-    
-    bar_plot3 <- eventReactive( input$plot_click3,{
-      if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
-      }
-      
-      else if(input$x=='Harry Potter and the Chamber of Secrets'){
-        kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
-      }
-      else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
-        kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
-      }
-      else if(input$x=='Harry Potter and the Goblet of Fire'){
-        kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
-      }
-      else if(input$x=='Harry Potter and the Order of the Phoenix'){
-        kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
-      }
-      else if(input$x=='Harry Potter and the Half-Blood Prince'){
-        kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
-      }
-      else{
-        kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
-      }
-      
-      
-      
-      # kb <- renderText({ 
-      #  read.csv(kb_data())
-      #})
-      #Preprocessing
-      #Cleaning Actions and Objects column
-      preProcess <- function(data){
-        data <-  gsub('\\[', '', data)
-        data <-  gsub('\\]', '', data)
-        data <-  gsub("\\'", '', data)
-        data <-  gsub("\\,", '', data)
-        data <-  gsub("\\- |\\-| ", ' ', data)
-        data <- sub("^$", "NA", data)
-        return(data)
-      }
-      
-      kb$Subject.Characters <- preProcess(kb$Subject.Characters)
-      kb$Actions.with.Subject.Charcater <- preProcess(kb$Actions.with.Subject.Charcater)
-      kb$Object.Characters <- preProcess(kb$Object.Characters)
-      kb$Objects.and.Actions <- preProcess(kb$Objects.and.Actions)
-      
-      #Removing those rows in which subject and object both are NA
-      kb <- subset(kb, !(grepl("NA",kb[[2]]) & grepl("NA",kb[[4]])))
-      
-      #Defining Event
-      event = list()
-      event_sentences = list()
-      j=0 #Event Index
-      for(i in 1:length(kb$Sentence)){
-        #print(i)
-        if(length(event) == 0){
-          currentObject <- strsplit(
-            (kb$Object.Characters[1])," ")
-          # currentObject<- currentObject[[1:length(strsplit((kb$Object.Characters[k])," ")[1])]]
-          
-          currentSubject <-   strsplit(
-            (kb$Subject.Characters[1])," ")
-          event[1] <- 1
-          print("Event Initialised")
-          j=1 #j is the event id
-          previous_event_characters <- c(currentSubject,currentObject)
-          
-        }
-        else{
-          
-          #Search in previous event
-          length_Last_Event = length(event[[j]])
-          #Storing the sentence id from the last event
-          temp <- event[[j]]
-          #print(c("temp =", temp))
-          
-          
-          # for(k in 1:length_Last_Event){
-          pronounList <- c("he","He","She","she","it","It","They","they","We","we","I","You","you","him","Him","Her","her","Them","them","Us","us","Me","me")
-          #New Algo for Scene Segmentation
-          currentObject <- unique(strsplit(kb$Object.Characters[i]," ")[[1:length(strsplit(kb$Object.Characters[i]," ")[1])]])
-          # currentObject<- currentObject[[1:length(strsplit((kb$Object.Characters[k])," ")[1])]]
-          
-          currentSubject <-   unique(strsplit(kb$Subject.Characters[i]," ")[[1:length(strsplit(kb$Subject.Characters[i]," ")[1])]])
-          #currentSubject<- currentSubject[[1:length(strsplit((kb$Subject.Characters[k])," ")[1])]]
-          
-          #  if((length(Reduce(intersect,list(currentObject,previous_event_characters)))==0) & (length(currentObject)>0)){
-          if(((length(intersect(strsplit(unlist(currentObject)," "),strsplit(unlist(previous_event_characters)," ")))==0) &
-              (length(intersect(strsplit(unlist(currentSubject)," "),strsplit(unlist(previous_event_characters)," ")))==0))){
-            #A new event defined
-            j = j+1 #Increasing the event id
-            event[[j]] <- i
-            #print("LALA")
-            print("New eventCC")
-            previous_event_characters <- c(currentSubject,currentObject)
-          }
-          else{
-            if(length(intersect(strsplit(unlist(currentObject)," "),strsplit(unlist(previous_event_characters)," ")))==0){
-              if(length(setdiff(currentObject,pronounList))==0){
-                event[[j]] <- c(event[[j]],i)
-                print("Same Event")
-                previous_event_characters <- c(previous_event_characters,currentSubject,currentObject)
-              }
-              else{
-                j = j+1 #Increasing the event id
-                event[[j]] <- i
-                #print("LALA")
-                print("New eventCC")
-                previous_event_characters <- c(currentSubject,currentObject)}
-            }
-            else{
-              event[[j]] <- c(event[[j]],i)
-              print("Same Event")
-              previous_event_characters <- c(previous_event_characters,currentSubject,currentObject)
-            }
-          }
-        } 
-      }
-      barplot(as.matrix(export[floor(as.numeric(input$plot_click3$x)),5:12]), 
-              main=paste("Categorical Emotion Mapping of Scene",floor(as.numeric(input$plot_click3$x))),
-              ylab="Emotion Score",
-              xlab="Categorical Emotions")
-      
-    })
-    output$`Plot Generated3` <- renderPlot({ 
-      bar_plot3()
-    })
       
       text_emotion3 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -4735,32 +4665,32 @@ function(input, output) {
     text_d3 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -4771,32 +4701,32 @@ function(input, output) {
     text_sub3 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -4908,32 +4838,32 @@ function(input, output) {
     text_obj3 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -5042,171 +4972,35 @@ function(input, output) {
     })
     
     
-    bar_plot3 <- eventReactive( input$plot_click3,{
-      if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
-      }
-      
-      else if(input$x=='Harry Potter and the Chamber of Secrets'){
-        kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
-      }
-      else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
-        kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
-      }
-      else if(input$x=='Harry Potter and the Goblet of Fire'){
-        kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
-      }
-      else if(input$x=='Harry Potter and the Order of the Phoenix'){
-        kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
-      }
-      else if(input$x=='Harry Potter and the Half-Blood Prince'){
-        kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
-      }
-      else{
-        kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
-      }
-      
-      
-      
-      # kb <- renderText({ 
-      #  read.csv(kb_data())
-      #})
-      #Preprocessing
-      #Cleaning Actions and Objects column
-      preProcess <- function(data){
-        data <-  gsub('\\[', '', data)
-        data <-  gsub('\\]', '', data)
-        data <-  gsub("\\'", '', data)
-        data <-  gsub("\\,", '', data)
-        data <-  gsub("\\- |\\-| ", ' ', data)
-        data <- sub("^$", "NA", data)
-        return(data)
-      }
-      
-      kb$Subject.Characters <- preProcess(kb$Subject.Characters)
-      kb$Actions.with.Subject.Charcater <- preProcess(kb$Actions.with.Subject.Charcater)
-      kb$Object.Characters <- preProcess(kb$Object.Characters)
-      kb$Objects.and.Actions <- preProcess(kb$Objects.and.Actions)
-      
-      #Removing those rows in which subject and object both are NA
-      kb <- subset(kb, !(grepl("NA",kb[[2]]) & grepl("NA",kb[[4]])))
-      
-      #Defining Event
-      event = list()
-      event_sentences = list()
-      j=0 #Event Index
-      for(i in 1:length(kb$Sentence)){
-        #print(i)
-        if(length(event) == 0){
-          currentObject <- strsplit(
-            (kb$Object.Characters[1])," ")
-          # currentObject<- currentObject[[1:length(strsplit((kb$Object.Characters[k])," ")[1])]]
-          
-          currentSubject <-   strsplit(
-            (kb$Subject.Characters[1])," ")
-          event[1] <- 1
-          print("Event Initialised")
-          j=1 #j is the event id
-          previous_event_characters <- c(currentSubject,currentObject)
-          
-        }
-        else{
-          
-          #Search in previous event
-          length_Last_Event = length(event[[j]])
-          #Storing the sentence id from the last event
-          temp <- event[[j]]
-          #print(c("temp =", temp))
-          
-          
-          # for(k in 1:length_Last_Event){
-          pronounList <- c("he","He","She","she","it","It","They","they","We","we","I","You","you","him","Him","Her","her","Them","them","Us","us","Me","me")
-          #New Algo for Scene Segmentation
-          currentObject <- unique(strsplit(kb$Object.Characters[i]," ")[[1:length(strsplit(kb$Object.Characters[i]," ")[1])]])
-          # currentObject<- currentObject[[1:length(strsplit((kb$Object.Characters[k])," ")[1])]]
-          
-          currentSubject <-   unique(strsplit(kb$Subject.Characters[i]," ")[[1:length(strsplit(kb$Subject.Characters[i]," ")[1])]])
-          #currentSubject<- currentSubject[[1:length(strsplit((kb$Subject.Characters[k])," ")[1])]]
-          
-          #  if((length(Reduce(intersect,list(currentObject,previous_event_characters)))==0) & (length(currentObject)>0)){
-          if(((length(intersect(strsplit(unlist(currentObject)," "),strsplit(unlist(previous_event_characters)," ")))==0) &
-              (length(intersect(strsplit(unlist(currentSubject)," "),strsplit(unlist(previous_event_characters)," ")))==0))){
-            #A new event defined
-            j = j+1 #Increasing the event id
-            event[[j]] <- i
-            #print("LALA")
-            print("New eventCC")
-            previous_event_characters <- c(currentSubject,currentObject)
-          }
-          else{
-            if(length(intersect(strsplit(unlist(currentObject)," "),strsplit(unlist(previous_event_characters)," ")))==0){
-              if(length(setdiff(currentObject,pronounList))==0){
-                event[[j]] <- c(event[[j]],i)
-                print("Same Event")
-                previous_event_characters <- c(previous_event_characters,currentSubject,currentObject)
-              }
-              else{
-                j = j+1 #Increasing the event id
-                event[[j]] <- i
-                #print("LALA")
-                print("New eventCC")
-                previous_event_characters <- c(currentSubject,currentObject)}
-            }
-            else{
-              event[[j]] <- c(event[[j]],i)
-              print("Same Event")
-              previous_event_characters <- c(previous_event_characters,currentSubject,currentObject)
-            }
-          }
-        } 
-      }
-      barplot(as.matrix(export[floor(as.numeric(input$plot_click3$x)),5:12]), 
-              main=paste("Categorical Emotion Mapping of Scene",floor(as.numeric(input$plot_click3$x))),
-              ylab="Emotion Score",
-              xlab="Categorical Emotions")
-      
-    })
-    output$`Plot Generated3` <- renderPlot({ 
-      bar_plot3()
-    }) 
-    
-    
     d_barplot3 <- eventReactive(input$plot_click3, {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        dist = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        dist = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        dist = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        dist = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        dist = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        dist = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        dist = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       
       
@@ -5303,159 +5097,22 @@ function(input, output) {
           }
         } 
       }
-      barplot(as.matrix(export[floor(as.numeric(input$plot_click3$x)),5:12]), 
-              main=paste("Categorical Emotion Mapping of Scene",floor(as.numeric(input$plot_click3$x))),
-              ylab="Emotion Score",
-              xlab="Categorical Emotions")
+      #barplot(as.matrix(export[floor(as.numeric(input$plot_click3$x)),5:12]), 
+      #        main=paste("Categorical Emotion Mapping of Scene",floor(as.numeric(input$plot_click3$x))),
+      #        ylab="Emotion Score",
+      #        xlab="Categorical Emotions")
       
       #  floor(as.numeric(input$plot_click1$x))
       
-      amRadar(data.frame(label = c("A", "Z", "E", "R", "T", "AW", "ZW", "EW"),
-                                Product1 = export[ floor(as.numeric(input$plot_click3$x)),5:12]),legend=TRUE,ylim=c(0,1))
+      mm1 <- as.matrix(sapply(dist, as.numeric))
+      mm2 <- matrix(mm1, ncol = ncol(dist), dimnames = NULL)
+      
+      amRadar(data.frame(label = c("joy","anticipation","surprise","trust","anger","sadness","disgust","fear"),
+                   Product1 = mm2[floor(as.numeric(input$plot_click3$x)),5:12])
+                   ,xlim=c(0,0.5))
+      
     })
-  
-    output$`Dimensional Mapping3` <- renderPlot({ 
-     
-      bar_plot3()
-    }) 
-    
-    
-    d_barplot3 <- eventReactive(input$plot_click3, {
-      if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
-      }
-      
-      else if(input$x=='Harry Potter and the Chamber of Secrets'){
-        kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
-      }
-      else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
-        kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
-      }
-      else if(input$x=='Harry Potter and the Goblet of Fire'){
-        kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
-      }
-      else if(input$x=='Harry Potter and the Order of the Phoenix'){
-        kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
-      }
-      else if(input$x=='Harry Potter and the Half-Blood Prince'){
-        kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
-      }
-      else{
-        kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
-      }
-      
-      
-      
-      # kb <- renderText({ 
-      #  read.csv(kb_data())
-      #})
-      #Preprocessing
-      #Cleaning Actions and Objects column
-      preProcess <- function(data){
-        data <-  gsub('\\[', '', data)
-        data <-  gsub('\\]', '', data)
-        data <-  gsub("\\'", '', data)
-        data <-  gsub("\\,", '', data)
-        data <-  gsub("\\- |\\-| ", ' ', data)
-        data <- sub("^$", "NA", data)
-        return(data)
-      }
-      
-      kb$Subject.Characters <- preProcess(kb$Subject.Characters)
-      kb$Actions.with.Subject.Charcater <- preProcess(kb$Actions.with.Subject.Charcater)
-      kb$Object.Characters <- preProcess(kb$Object.Characters)
-      kb$Objects.and.Actions <- preProcess(kb$Objects.and.Actions)
-      
-      #Removing those rows in which subject and object both are NA
-      kb <- subset(kb, !(grepl("NA",kb[[2]]) & grepl("NA",kb[[4]])))
-      
-      #Defining Event
-      event = list()
-      event_sentences = list()
-      j=0 #Event Index
-      for(i in 1:length(kb$Sentence)){
-        #print(i)
-        if(length(event) == 0){
-          currentObject <- strsplit(
-            (kb$Object.Characters[1])," ")
-          # currentObject<- currentObject[[1:length(strsplit((kb$Object.Characters[k])," ")[1])]]
-          
-          currentSubject <-   strsplit(
-            (kb$Subject.Characters[1])," ")
-          event[1] <- 1
-          print("Event Initialised")
-          j=1 #j is the event id
-          previous_event_characters <- c(currentSubject,currentObject)
-          
-        }
-        else{
-          
-          #Search in previous event
-          length_Last_Event = length(event[[j]])
-          #Storing the sentence id from the last event
-          temp <- event[[j]]
-          #print(c("temp =", temp))
-          
-          
-          # for(k in 1:length_Last_Event){
-          pronounList <- c("he","He","She","she","it","It","They","they","We","we","I","You","you","him","Him","Her","her","Them","them","Us","us","Me","me")
-          #New Algo for Scene Segmentation
-          currentObject <- unique(strsplit(kb$Object.Characters[i]," ")[[1:length(strsplit(kb$Object.Characters[i]," ")[1])]])
-          # currentObject<- currentObject[[1:length(strsplit((kb$Object.Characters[k])," ")[1])]]
-          
-          currentSubject <-   unique(strsplit(kb$Subject.Characters[i]," ")[[1:length(strsplit(kb$Subject.Characters[i]," ")[1])]])
-          #currentSubject<- currentSubject[[1:length(strsplit((kb$Subject.Characters[k])," ")[1])]]
-          
-          #  if((length(Reduce(intersect,list(currentObject,previous_event_characters)))==0) & (length(currentObject)>0)){
-          if(((length(intersect(strsplit(unlist(currentObject)," "),strsplit(unlist(previous_event_characters)," ")))==0) &
-              (length(intersect(strsplit(unlist(currentSubject)," "),strsplit(unlist(previous_event_characters)," ")))==0))){
-            #A new event defined
-            j = j+1 #Increasing the event id
-            event[[j]] <- i
-            #print("LALA")
-            print("New eventCC")
-            previous_event_characters <- c(currentSubject,currentObject)
-          }
-          else{
-            if(length(intersect(strsplit(unlist(currentObject)," "),strsplit(unlist(previous_event_characters)," ")))==0){
-              if(length(setdiff(currentObject,pronounList))==0){
-                event[[j]] <- c(event[[j]],i)
-                print("Same Event")
-                previous_event_characters <- c(previous_event_characters,currentSubject,currentObject)
-              }
-              else{
-                j = j+1 #Increasing the event id
-                event[[j]] <- i
-                #print("LALA")
-                print("New eventCC")
-                previous_event_characters <- c(currentSubject,currentObject)}
-            }
-            else{
-              event[[j]] <- c(event[[j]],i)
-              print("Same Event")
-              previous_event_characters <- c(previous_event_characters,currentSubject,currentObject)
-            }
-          }
-        } 
-      }
-      barplot(as.matrix(export[floor(as.numeric(input$plot_click3$x)),5:12]), 
-              main=paste("Categorical Emotion Mapping of Scene",floor(as.numeric(input$plot_click3$x))),
-              ylab="Emotion Score",
-              xlab="Categorical Emotions")
-      
-      #  floor(as.numeric(input$plot_click1$x))
-      
-      # amRadar(data.frame(label = c("A", "Z", "E", "R", "T", "AW", "ZW", "EW"),
-      #                          Product1 = export[ floor(as.numeric(input$plot_click1$x)),5:12]),legend=TRUE,ylim=c(0,1))
-    })
-    output$`Dimensional Mapping3` <- renderPlot({ 
+    output$`Dimensional Mapping3` <- renderAmCharts({ 
       d_barplot3()
     })
     ######################################################################################
@@ -5474,32 +5131,32 @@ function(input, output) {
     text_scene_generated <- eventReactive(input$x, {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
         kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        export = as.data.frame(read.csv("event_distribution_1.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
         kb = read.csv("storygraph_v2.csv")
-        export = as.data.frame(read.csv("event_distribution2.csv"))
+        export = as.data.frame(read.csv("event_distribution_2.csv"))
       }
       else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
         kb = read.csv("storygraph_v3.csv")
-        export = as.data.frame(read.csv("event_distribution3.csv"))
+        export = as.data.frame(read.csv("event_distribution_3.csv"))
       }
       else if(input$x=='Harry Potter and the Goblet of Fire'){
         kb = read.csv("storygraph_v4.csv")
-        export = as.data.frame(read.csv("event_distribution4.csv"))
+        export = as.data.frame(read.csv("event_distribution_4.csv"))
       }
       else if(input$x=='Harry Potter and the Order of the Phoenix'){
         kb = read.csv("storygraph_v5.csv")
-        export = as.data.frame(read.csv("event_distribution5.csv"))
+        export = as.data.frame(read.csv("event_distribution_5.csv"))
       }
       else if(input$x=='Harry Potter and the Half-Blood Prince'){
         kb = read.csv("storygraph_v6.csv")
-        export = as.data.frame(read.csv("event_distribution6.csv"))
+        export = as.data.frame(read.csv("event_distribution_6.csv"))
       }
       else{
         kb = read.csv("storygraph_v7.csv")
-        export = as.data.frame(read.csv("event_distribution7.csv"))
+        export = as.data.frame(read.csv("event_distribution_7.csv"))
       }
       paste("Total number of scenes in this story are", length(export$paragraph))
     })

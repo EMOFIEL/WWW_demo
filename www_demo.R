@@ -1,0 +1,11 @@
+setwd("/home/jhavarharshita/Desktop/www_conference_visit/WWW_demo_master_final/demo")
+library(rsconnect)
+library(ggplot2)
+library(shiny)
+#rsconnect::setAccountInfo(name='harshitajhavar', token='0DD8938C4A8977BCCF39F3231A32F6AE', secret='7OaxfFHBLAR63KxYowDPlEVjMbmvVDntU0/Dwi03')
+#rsconnect::setAccountInfo(name='jhavarharshita', token='3AE85DE08495BCDB7AFDB4A428ABE5B9', secret='DJjCY3+cMCOSeDtFwJtDTiKpEvOzI/jCamDb7MsU')
+rsconnect::setAccountInfo(name='harshitajhavar', token='0DD8938C4A8977BCCF39F3231A32F6AE', secret='7OaxfFHBLAR63KxYowDPlEVjMbmvVDntU0/Dwi03')
+#rsconnect::setAccountInfo(name='emofiel', token='7883F5BF255F181D72B28B3067DB1C9B', secret='+X1tbh3Ge5BuyWoawGzycDYmr5LbGbfhmzDKRPk4')
+rsconnect::deployApp('/home/jhavarharshita/Desktop/www_conference_visit/WWW_demo_master_final/demo')
+deployApp()
+
