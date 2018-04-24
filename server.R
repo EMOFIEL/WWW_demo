@@ -62,9 +62,9 @@ function(input, output) {
                    'Harry Potter and the Order of the Phoenix',
                    'Harry Potter and the Half-Blood Prince',
                    'Harry Potter and the Deathly Hallows: Part 1')
-  book_kb_files <- c("storygraph_v1.csv","storygraph_v2.csv","storygraph_v3.csv","storygraph_v4.csv",
+  book_kb_files <- c("storygraph_v1_new.csv","storygraph_v2.csv","storygraph_v3.csv","storygraph_v4.csv",
                      "storygraph_v5.csv","storygraph_v6.csv","storygraph_v7.csv")
-  book_export_files <- c("event_distribution1.csv","event_distribution2.csv","event_distribution3.csv",
+  book_export_files <- c("event_distribution1_new.csv","event_distribution2.csv","event_distribution3.csv",
                          "event_distribution4.csv","event_distribution5.csv","event_distribution6.csv",
                          "event_distribution7.csv")
   
@@ -150,6 +150,34 @@ function(input, output) {
     return(paste('<iframe style="height:700px; width:100%" src="https://people.mpi-inf.mpg.de/~paramita/download/www-2018-demo-poster-emofiel.pdf"></iframe>', sep = ""))
   })
   
+  output$table.summary <- renderPrint({
+    if(input$x =='Harry Potter and the Philosopher\'s Stone'){
+      summaryfile <- 'summary_1.txt'
+    }
+    
+    else if(input$x=='Harry Potter and the Chamber of Secrets'){
+      summaryfile <- 'summary_1.txt'
+    }
+    else if(input$x=='Harry Potter and the Prisoner of Azkaban'){
+      summaryfile <- 'summary_1.txt'
+    }
+    else if(input$x=='Harry Potter and the Goblet of Fire'){
+      summaryfile <- 'summary_1.txt'
+    }
+    else if(input$x=='Harry Potter and the Order of the Phoenix'){
+      summaryfile <- 'summary_1.txt'
+    }
+    else if(input$x=='Harry Potter and the Half-Blood Prince'){
+      summaryfile <- 'summary_1.txt'
+    }
+    else{
+      summaryfile <- 'summary_1.txt'
+    }
+    
+    summary <- readChar(summaryfile, file.info(summaryfile)$size)
+    HTML(paste(summary))
+  })
+  
   generate_plot1 <- eventReactive(input$goButton0,{
     
     ############# Progress ##############
@@ -166,8 +194,8 @@ function(input, output) {
     
     #################################
     if(input$x =='Harry Potter and the Philosopher\'s Stone'){
-      kb = read.csv("storygraph_v1.csv")
-      export = as.data.frame(read.csv("event_distribution1.csv"))
+      kb = read.csv("storygraph_v1_new.csv")
+      export = as.data.frame(read.csv("event_distribution1_new.csv"))
     }
     
     else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -656,8 +684,8 @@ function(input, output) {
     
     #################################
     if(input$x =='Harry Potter and the Philosopher\'s Stone'){
-      kb = read.csv("storygraph_v1.csv")
-      export = as.data.frame(read.csv("event_distribution1.csv"))
+      kb = read.csv("storygraph_v1_new.csv")
+      export = as.data.frame(read.csv("event_distribution1_new.csv"))
     }
     
     else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -1161,8 +1189,8 @@ function(input, output) {
     #export = as.data.frame(read.csv("event_distribution2.csv"))
     #################################
     if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-      kb = read.csv("storygraph_v1.csv")
-      export = as.data.frame(read.csv("event_distribution1.csv"))
+      kb = read.csv("storygraph_v1_new.csv")
+      export = as.data.frame(read.csv("event_distribution1_new.csv"))
     }
     
     else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -1599,8 +1627,8 @@ function(input, output) {
       #export = as.data.frame(read.csv("event_distribution2.csv"))
       #################################
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -2085,8 +2113,8 @@ function(input, output) {
     ##########################################################################################################
     text_emotion <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -2137,8 +2165,8 @@ function(input, output) {
     #Scene Description
     text_d <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -2172,8 +2200,8 @@ function(input, output) {
     
     text_sub <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -2309,8 +2337,8 @@ function(input, output) {
     
     text_obj <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -2446,8 +2474,8 @@ function(input, output) {
     
     bar_plot <- eventReactive( input$plot_click1,{
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -2582,8 +2610,8 @@ function(input, output) {
     
     d_barplot <- eventReactive(input$plot_click1, {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        dist = as.data.frame(read.csv("event_distribution_1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        dist = as.data.frame(read.csv("event_distribution_1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -2723,8 +2751,8 @@ function(input, output) {
     #########################################################################################
     text_emotion2 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -2775,8 +2803,8 @@ function(input, output) {
     #Scene Description
     text_d2 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -2810,8 +2838,8 @@ function(input, output) {
     
     text_sub2 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -2947,8 +2975,8 @@ function(input, output) {
     
     text_obj2 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -3084,8 +3112,8 @@ function(input, output) {
     
     bar_plot2 <- eventReactive( input$plot_click2,{
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -3220,8 +3248,8 @@ function(input, output) {
     
     d_barplot2 <- eventReactive(input$plot_click2, {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        dist = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        dist = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -3360,8 +3388,8 @@ function(input, output) {
     ######################################################################################
     text_emotion2 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -3412,8 +3440,8 @@ function(input, output) {
     #Scene Description
     text_d2 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -3447,8 +3475,8 @@ function(input, output) {
     
     text_sub2 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -3584,8 +3612,8 @@ function(input, output) {
     
     text_obj2 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -3721,8 +3749,8 @@ function(input, output) {
     
     bar_plot2 <- eventReactive( input$plot_click2,{
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -3858,8 +3886,8 @@ function(input, output) {
     
     d_barplot2 <- eventReactive(input$plot_click2, {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        dist = as.data.frame(read.csv("event_distribution_1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        dist = as.data.frame(read.csv("event_distribution_1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -4000,8 +4028,8 @@ function(input, output) {
     ##################################################################################################
     text_emotion4 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -4052,8 +4080,8 @@ function(input, output) {
     #Scene Description
     text_d4 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -4088,8 +4116,8 @@ function(input, output) {
   
     text_sub4 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -4225,8 +4253,8 @@ function(input, output) {
     
     text_obj4 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -4362,8 +4390,8 @@ function(input, output) {
     
     bar_plot4 <- eventReactive( input$plot_click4,{
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -4498,8 +4526,8 @@ function(input, output) {
     
     d_barplot4 <- eventReactive(input$plot_click4, {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        dist = as.data.frame(read.csv("event_distribution_1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        dist = as.data.frame(read.csv("event_distribution_1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -4640,8 +4668,8 @@ function(input, output) {
     ######################################################################################
     text_emotion3 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -4692,8 +4720,8 @@ function(input, output) {
     #Scene Description
     text_d3 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -4728,8 +4756,8 @@ function(input, output) {
     
     text_sub3 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -4865,8 +4893,8 @@ function(input, output) {
     
     text_obj3 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -5002,8 +5030,8 @@ function(input, output) {
     
     bar_plot3 <- eventReactive( input$plot_click3,{
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -5137,8 +5165,8 @@ function(input, output) {
       
       text_emotion3 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -5189,8 +5217,8 @@ function(input, output) {
     #Scene Description
     text_d3 <- renderText({
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -5225,8 +5253,8 @@ function(input, output) {
     
     text_sub3 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -5362,8 +5390,8 @@ function(input, output) {
     
     text_obj3 <- renderText( {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -5499,8 +5527,8 @@ function(input, output) {
     
     bar_plot3 <- eventReactive( input$plot_click3,{
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -5635,8 +5663,8 @@ function(input, output) {
     
     d_barplot3 <- eventReactive(input$plot_click3, {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -5777,8 +5805,8 @@ function(input, output) {
     
     d_barplot3 <- eventReactive(input$plot_click3, {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        dist = as.data.frame(read.csv("event_distribution_1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        dist = as.data.frame(read.csv("event_distribution_1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){
@@ -5933,8 +5961,8 @@ function(input, output) {
     })
     text_scene_generated <- eventReactive(input$x, {
       if(input$x=='Harry Potter and the Philosopher\'s Stone'){
-        kb = read.csv("storygraph_v1.csv")
-        export = as.data.frame(read.csv("event_distribution1.csv"))
+        kb = read.csv("storygraph_v1_new.csv")
+        export = as.data.frame(read.csv("event_distribution1_new.csv"))
       }
       
       else if(input$x=='Harry Potter and the Chamber of Secrets'){

@@ -388,7 +388,13 @@ fluidPage(
                     )
                   )
                 )
+            ),
+            
+            tabPanel("Summary Text",
+                #tableOutput(outputId = 'table.summary')
+                htmlOutput("table.summary")
             )
+            
           )
           
           
