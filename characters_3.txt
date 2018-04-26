@@ -1,0 +1,40 @@
+<table style='border-collapse:collapse;'>
+<thead><tr style='border-bottom: 1pt solid #bbb;'><th>Character Key</th><th>Character Name</th><th>Character Type</th></tr></thead><tbody>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Poppy</span></td><td>Poppy Pomfrey</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>James</span></td><td>James Potter</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Lily</span></td><td>Lily J. Potter</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Gregory</span></td><td>Gregory Goyle</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Argus</span></td><td>Argus Filch</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Oliver</span></td><td>Oliver Wood</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Percy</span></td><td>Percy Ignatius Weasley</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Vincent</span></td><td>Vincent Crabbe</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Severus</span></td><td>Severus Snape</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Weasley</span></td><td>Weasley family</td><td>Family</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Cornelius</span></td><td>Cornelius Oswald Fudge</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Severus</span></td><td>Severus Snape</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Dudley</span></td><td>Dudley Dursley</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Filius</span></td><td>Filius Flitwick</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Broomstick</span></td><td>Broomstick</td><td>Object</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>William</span></td><td>William Arthur Weasley</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Ronald</span></td><td>Ronald Bilius Weasley</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Vernon</span></td><td>Vernon Dursley</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Minerva</span></td><td>Minerva McGonagall</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Rubeus</span></td><td>Rubeus Hagrid</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Ginevra</span></td><td>Ginevra Molly Potter</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Sirius</span></td><td>Sirius Black</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Harry</span></td><td>Harry James Potter</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Fat</span></td><td>The Fat Lady</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Hedwig</span></td><td>Hedwig</td><td>Pet individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Tom</span></td><td>Tom Marvolo Riddle</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Albus</span></td><td>Albus Percival Wulfric Brian Dumbledore</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Hermione</span></td><td>Hermione Jean Granger</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Marcus</span></td><td>Marcus Flint</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Dursley</span></td><td>Dursley family</td><td>Family</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Marjorie</span></td><td>Marjorie Eileen Dursley</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Draco</span></td><td>Draco Lucius Malfoy</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Arthur</span></td><td>Arthur Weasley</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Petunia</span></td><td>Petunia Dursley</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Remus</span></td><td>Remus John Lupin</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Augusta</span></td><td>Augusta Longbottom</td><td>Individual</td></tr>
+<tr style='border-bottom: 1pt solid #bbb;'><td><span style='color: #008cba;'>Peter</span></td><td>Peter Pettigrew</td><td>Individual</td></tr>
+</tbody></table>

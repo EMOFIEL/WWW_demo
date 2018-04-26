@@ -1,14 +1,14 @@
 #Creating Story Graph from knoweldge base and querying it
-setwd("/home/jhavarharshita/PycharmProjects/MxP")
+setwd("/local/home/paramita/Projects/emofiel/")
 library(igraph)
 library(stringr)
 library(dplyr)
 library(tidytext)
 library("tm")
 library("SnowballC")
-library("wordcloud")
+#library("wordcloud")
 library("RColorBrewer")
-kb = read.csv("storygraph_v3.csv")  # read csv file
+kb = read.csv("storygraph_v1.csv")  # read csv file
 character_list = read.csv("character_list.csv",header = TRUE)
 #Preprocessing
 #Cleaning Actions and Objects column
@@ -187,7 +187,7 @@ no_of_interactions = 1:length(event)
 Valence =  1:length(event)
 Arousal =  1:length(event)
 Dominance =  1:length(event)
-export = data.frame(paragraph,nrc_sentiment,no_of_interactions,sentence_id,anger,anticipation,disgust,fear,joy,sadness,surprise,trust,Valence, Arousal, Dominance)
+export = data.frame(paragraph,nrc_sentiment,no_of_interactions,sentence_id,joy,anticipation,surprise,trust,anger,sadness,disgust,fear,Valence, Arousal, Dominance)
 
 for(i in 1:length(event)){
   export$paragraph[i] = ""
@@ -284,7 +284,7 @@ export$no_of_interactions[i] = length(get_sentiment(get_sentences(export$paragra
 #Calculating the Valence, Arousal and Dominance.
 fileConn<-file("input.txt")
 writeLines(export$paragraph[i], fileConn)
-system("java -jar /home/jhavarharshita/PycharmProjects/MxP/JEmAS-master/JEmAS-v0.2-beta.jar /home/jhavarharshita/PycharmProjects/MxP/input.txt > output.csv", intern=TRUE)
+system("java -jar //local/home/paramita/Projects/emofiel//JEmAS-v0.2-beta.jar /local/home/paramita/Projects/emofiel//input.txt > output.csv", intern=TRUE)
 close(fileConn)
 temp_kb <- read.csv("output.csv")
 temp_kb <- read.csv("output.csv", sep = "\t")
@@ -295,7 +295,7 @@ export$Dominance[i] = temp_kb$Dominance[1]
 #Plotting along the storyline
 plot(export$nrc_sentiment,xlab = "Event Indexes", ylab = "Emotion Valence", main = "Emotion valence along different events throughout the story ",type = "l")
 
-write.csv(export, file= "event_distribution3.csv", row.names = FALSE)
+write.csv(export, file= "event_distribution_1.csv", row.names = FALSE)
 
 fileConn<-file("events.txt")
 writeLines(as.character(event), fileConn)

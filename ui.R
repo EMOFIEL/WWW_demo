@@ -6,32 +6,149 @@ library(rAmCharts)
 library(shinythemes)
 library(shinyjs)
 
-list_of_character <- c('Harry Potter'
-                        , 'Ronald Weasley'
-                        , 'Hermione Granger'
-                        , 'Hagrid'
-                        , 'Albus Dumbledore'
-                        , 'Voldemort'
-                        , 'Draco Malfoy'
-                        , 'Neville Longbottom'
-                        , 'Minerva McGonagall'
-                        , 'Severus Snape'
-                        , 'Vernon Dursley'
-                        , 'Petunia Dursley'
-                        , 'Dudley Dursley')
-list_of_character_desc <- c('The protagonist of the story, who is gradually transformed from timid weakling to powerful hero by the end.'
-                        ,'A shy, modest boy who comes from an impoverished wizard family.'
-                        ,'Initially an annoying goody-two-shoes who studies too much and obeys the school rules too zealously.'
-                        ,'An oafish giant who works as a groundskeeper at Hogwarts.'
-                        ,'The kind, wise head of Hogwarts.'
-                        ,'A great wizard gone bad.'
-                        ,'An arrogant student and Harry’s nemesis.'
-                        ,'A timid Hogwarts classmate of Harry’s.'
-                        ,'The head of Gryffindor House at Hogwarts and a high-ranking woman in the wizard world.'
-                        ,'A professor of Potions at Hogwarts.'
-                        ,'Harry’s uncle, with whom Harry lives for ten miserable years.'
-                        ,'Harry’s aunt.'
-                        ,'Harry’s cousin, a spoiled, fat bully.')
+list_of_character <- c('Albus Dumbledore'
+                       , 'Arabella Figg'
+                       , 'Argus Filch'
+                       , 'Armando Dippet'
+                       , 'Arthur Weasley'
+                       , 'Augusta Longbottom'
+                       , 'Bane'
+                       , 'Borgin'
+                       , 'Charles Weasley'
+                       , 'Colin Creevey'
+                       , 'Cornelius Fudge'
+                       , 'Cuthbert Binns'
+                       , 'Dedalus Diggle'
+                       , 'Dobby'
+                       , 'Doris Crockford'
+                       , 'Draco Malfoy'
+                       , 'Dudley Dursley'
+                       , 'Ernest Macmillan'
+                       , 'The Fat Lady'
+                       , 'Filius Flitwick'
+                       , 'Firenze'
+                       , 'Fred Weasley'
+                       , 'Garrick Ollivander'
+                       , 'George Weasley'
+                       , 'Gilderoy Lockhart'
+                       , 'Ginevra Potter'
+                       , 'Godric Gryffindor'
+                       , 'Gregory Goyle'
+                       , 'Griphook'
+                       , 'Harry Potter'
+                       , 'Hermione Granger'
+                       , 'Irma Pince'
+                       , 'James Potter'
+                       , 'Lily Potter'
+                       , 'Lucius Malfoy'
+                       , 'Malkin'
+                       , 'Marcus Flint'
+                       , 'Marjorie Dursley'
+                       , 'Marvolo Gaunt'
+                       , 'Merope Riddle'
+                       , 'Millicent Bulstrode'
+                       , 'Minerva McGonagall'
+                       , 'Molly Weasley'
+                       , 'Mr Mason'
+                       , 'Mrs Mason'
+                       , 'Myrtle Warren'
+                       , 'Neville Longbottom'
+                       , 'Nicolas Flamel'
+                       , 'Oliver Wood'
+                       , 'Peeves'
+                       , 'Penelope Clearwater'
+                       , 'Percy Weasey'
+                       , 'Peter Pettigrew'
+                       , 'Petunia Dursley'
+                       , 'Piers Polkiss'
+                       , 'Pomona Sprout'
+                       , 'Poppy Pomfrey'
+                       , 'Quirinus Quirrell'
+                       , 'Remus Lupin'
+                       , 'Rolanda Hooch'
+                       , 'Ronald Weasley'
+                       , 'Ronan'
+                       , 'Rubeus Hagrid'
+                       , 'Salazar Slytherin'
+                       , 'Seamus Finnigan'
+                       , 'Severus Snape'
+                       , 'Sirius Black'
+                       , 'Tom Riddle'
+                       , 'Vernon Dursley'
+                       , 'Vincent Crabbe'
+                       , 'William Weasley')
+
+list_of_character_desc <- c('The kind, wise head of Hogwarts.'
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , 'An arrogant student and Harry’s nemesis.'
+                            , 'Harry’s cousin, a spoiled, fat bully.'
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , 'The protagonist of the story, who is gradually transformed from timid weakling to powerful hero by the end.'
+                            , 'Initially an annoying goody-two-shoes who studies too much and obeys the school rules too zealously.'
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , 'The head of Gryffindor House at Hogwarts and a high-ranking woman in the wizard world.'
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , 'A timid Hogwarts classmate of Harry’s.'
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , 'Harry’s aunt.'
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , ''
+                            , 'A shy, modest boy who comes from an impoverished wizard family'
+                            , ''
+                            , 'An oafish giant who works as a groundskeeper at Hogwarts.'
+                            , ''
+                            , ''
+                            , 'A professor of Potions at Hogwarts.'
+                            , ''
+                            , 'A great wizard gone bad.'
+                            , 'Harry’s uncle, with whom Harry lives for ten miserable years.'
+                            , ''
+                            , '')
 
 fluidPage(
   useShinyjs(),
@@ -209,7 +326,7 @@ fluidPage(
                             h5(textOutput("Selected Scene ID"))
                             , span(
                               style="font-style: italic; "
-                              , textOutput("Selected Scene Description")
+                              , htmlOutput("Selected Scene Description")
                               )
                             #, textOutput("Selected Scene Agents and Actions")
                             #, textOutput("Selected Scene Objects and Actions")
@@ -265,7 +382,7 @@ fluidPage(
                                 h5(textOutput("Selected Scene ID3"))
                                 , span(
                                   style="font-style: italic; "
-                                  , textOutput("Selected Scene Description3")
+                                  , htmlOutput("Selected Scene Description3")
                                 )
                                 #, textOutput("Selected Scene Agents and Actions3")
                                 #, textOutput("Selected Scene Objects and Actions3")
@@ -323,7 +440,7 @@ fluidPage(
                                 h5(textOutput("Selected Scene ID2"))
                                 , span(
                                   style="font-style: italic; "
-                                  , textOutput("Selected Scene Description2")
+                                  , htmlOutput("Selected Scene Description2")
                                 )
                                 #, textOutput("Selected Scene Agents and Actions2")
                                 #, textOutput("Selected Scene Objects and Actions2")
@@ -378,7 +495,7 @@ fluidPage(
                                 h5(textOutput("Selected Scene ID4"))
                                 , span(
                                   style="font-style: italic; "
-                                  , textOutput("Selected Scene Description4")
+                                  , htmlOutput("Selected Scene Description4")
                                 )
                                 #, textOutput("Selected Scene Agents and Actions4")
                                 #, textOutput("Selected Scene Objects and Actions4")
@@ -393,6 +510,11 @@ fluidPage(
             tabPanel("Summary Text",
                 #tableOutput(outputId = 'table.summary')
                 htmlOutput("table.summary")
+            ),
+            
+            tabPanel("Story Characters",
+                     #tableOutput(outputId = 'table.characters')
+                     htmlOutput("table.characters")
             )
             
           )
